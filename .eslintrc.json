@@ -1,0 +1,29 @@
+{
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "extends": "airbnb",
+  "parser": "babel-eslint",
+  "rules": {
+    "func-names": 0,
+    "no-nested-ternary": 0,
+    "max-len": ["error", {
+      "code": 100,
+      "ignorePattern": "(?:(`|'|\")[^\\1]{70,}\\1)|eslint-disable-line|(?://.*)"
+    }],
+    "arrow-parens": ["error", "always"],
+    "no-underscore-dangle": 0,
+    "comma-dangle": ["error", {
+      "arrays": "always-multiline",
+      "objects": "always-multiline",
+      "imports": "always-multiline",
+      "exports": "always-multiline",
+      "functions": "never"
+    }],
+    "no-use-before-define": ["error", "nofunc"],
+    "no-empty": ["error", { "allowEmptyCatch": true }],
+    "no-mixed-operators": ["error", { "allowSamePrecedence": true }],
+    "indent": ["error", 2, { "flatTernaryExpressions": true, "SwitchCase": 1 }]
+  }
+}

@@ -1,0 +1,39 @@
+<!doctype html>
+<link rel="stylesheet" href="popup.css">
+
+<div id="popup">
+	<h1>Ethereum Gas Prices</h1>
+	<button id="refresh-button" data-content-loaded="false"></button>
+	<table>
+		<tr>
+			<td />
+			<td class="label">Fast</td>
+			<td class="label">Normal</td>
+			<td class="label">Slow</td>
+			<td />
+		</tr>
+		<tr id="gasNow">
+			<td><a href="https://www.gasnow.org/" target="_blank">GasNow</a></td>
+			<td class="fast">...</td>
+			<td class="normal">...</td>
+			<td class="slow">...</td>
+			<td class="timestamp"></td>
+		</tr>
+		<tr id="etherscan">
+			<td><a href="https://etherscan.io/gastracker" target="_blank">Etherscan</a></td>
+			<td class="fast">...</td>
+			<td class="normal">...</td>
+			<td class="slow">...</td>
+			<td class="timestamp"></td>
+		</tr>
+		<tr id="egs">
+			<td><a href="https://ethgasstation.info/" target="_blank">EGS</a></td>
+			<td class="fast">...</td>
+			<td class="normal">...</td>
+			<td class="slow">...</td>
+			<td class="timestamp"></td>
+		</tr>
+	</table>
+</div>
+
+<script src="popup.js"></script>
