@@ -26,10 +26,10 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 });
 
 const sleep = (duration) => new Promise((resolve) => setTimeout(resolve, duration));
-const lock = new (class Lock {
-  state = {
+const lock = {
+  state: {
     isLocked: false,
-  };
+  },
 
   // Wait and acquire lock
   async acquire() {
@@ -38,12 +38,12 @@ const lock = new (class Lock {
     }
 
     this.state.isLocked = true;
-  }
+  },
 
   release() {
     this.state.isLocked = false;
-  }
-})();
+  },
+};
 
 const getStoredPrices = () => new Promise((res) => {
   chrome.storage.local.get(['prices'], (result) => {
@@ -118,7 +118,8 @@ const fetchEGSData = async () => {
 };
 
 
-chrome.alarms.create('fetch-prices', { when: 0, periodInMinutes: 1 });
+chrome.alarms.create('fetch-prices', { periodInMinutes: 1 });
+fetchPrices(); // Not using the `when` option for the alarm because Firefox doesn't run it
 chrome.browserAction.setBadgeText({ text: '…' });
 chrome.browserAction.setBadgeBackgroundColor({ color: '#20242a' });
 
