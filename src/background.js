@@ -61,7 +61,6 @@ const fetchPrices = async () => {
 };
 
 const fetchGasNowData = async () => {
-  // Uses self-hosted proxy to work around CORS header not set on GasNow API responses
   const { data: { list } } =
     await (await fetch('https://ethereum-data.opfi.fr/api/gasnow')).json();
 
@@ -75,14 +74,18 @@ const fetchGasNowData = async () => {
 
 const fetchEtherscanData = async () => {
   const { result: { SafeGasPrice, ProposeGasPrice, FastGasPrice } } =
-    await (await fetch('https://api.etherscan.io/api?module=gastracker&action=gasoracle')).json();
+    await (await fetch('https://ethereum-data.opfi.fr/api/etherscan-gas')).json();
 
-  return [parseInt(FastGasPrice), parseInt(ProposeGasPrice), parseInt(SafeGasPrice)];
+  return [
+    parseInt(FastGasPrice, 10),
+    parseInt(ProposeGasPrice, 10),
+    parseInt(SafeGasPrice, 10),
+  ];
 };
 
 const fetchEGSData = async () => {
   const { fast, safeLow, average } =
-    await (await fetch('https://ethgasstation.info/api/ethgasAPI.json')).json();
+    await (await fetch('https://ethereum-data.opfi.fr/api/ethgasstation')).json();
 
   return [fast / 10, average / 10, safeLow / 10];
 };
