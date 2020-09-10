@@ -2,7 +2,7 @@
 
 # Ethereum Gas Prices
 
-Always up-to-date Ethereum gas prices from the 3 most popular data sources for Ethereum gas information: [GasNow](https://www.gasnow.org/), [Etherscan](https://etherscan.io/gastracker), and [EthGasStation](https://ethgasstation.info/).
+Always up-to-date Ethereum gas prices from the 3 most popular data sources for Ethereum gas information: [GasNow](https://www.gasnow.org/), [Etherscan](https://etherscan.io/gastracker), and [EthGasStation](https://ethgasstation.info/). Right in your browser (available for [Chrome](https://chrome.google.com/webstore/detail/ethereum-gas-prices/njbclohenpagagafbmdipcdoogfpnfhp), [Brave](https://chrome.google.com/webstore/detail/ethereum-gas-prices/njbclohenpagagafbmdipcdoogfpnfhp), [Firefox](https://addons.mozilla.org/en-CA/firefox/addon/ethereum-gas-prices/)).
 
 The badge displays the current gas price estimation for "normal" transaction speeds: not too slow, not too fast.
 
@@ -16,8 +16,8 @@ The extension respects your privacy: zero data tracking, zero permissions requir
 
 ## Links
 
-- Chrome extension: <a href="https://chrome.google.com/webstore/detail/ethereum-gas-prices/njbclohenpagagafbmdipcdoogfpnfhp">Download for Chrome/Brave</a>
-- Firefox extension: *pending review*
+- Chrome extension: [Download for Chrome/Brave](https://chrome.google.com/webstore/detail/ethereum-gas-prices/njbclohenpagagafbmdipcdoogfpnfhp)
+- Firefox extension: [Download for Firefox](https://addons.mozilla.org/en-CA/firefox/addon/ethereum-gas-prices/)
 - Crypto and DeFi dashboard to easily track your portfolio: [Unspent](https://unspent.io)
 
 ## Acknowledgments
