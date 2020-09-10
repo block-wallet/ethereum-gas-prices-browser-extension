@@ -1,7 +1,7 @@
 {
   "name": "ethereum-gas-prices-browser-extension",
   "scripts": {
-    "zip": "zip dist.zip src -r"
+    "zip": "cd src && rm -f ../dist/dist.zip && zip ../dist/dist.zip * -r"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
