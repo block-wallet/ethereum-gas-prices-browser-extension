@@ -74,9 +74,17 @@ const saveFetchedPricesForProvider = async (source, prices) => {
 };
 
 const fetchPrices = async () => {
-  await fetchGasNowData().then((prices) => saveFetchedPricesForProvider('gasNow', prices));
-  await fetchEtherscanData().then((prices) => saveFetchedPricesForProvider('etherscan', prices));
-  await fetchEGSData().then((prices) => saveFetchedPricesForProvider('egs', prices));
+  await fetchGasNowData()
+    .catch(() => [null, null, null]) // Default to null if network error
+    .then((prices) => saveFetchedPricesForProvider('gasNow', prices));
+
+  await fetchEtherscanData()
+    .catch(() => [null, null, null]) // Default to null if network error
+    .then((prices) => saveFetchedPricesForProvider('etherscan', prices));
+
+  await fetchEGSData()
+    .catch(() => [null, null, null]) // Default to null if network error
+    .then((prices) => saveFetchedPricesForProvider('egs', prices));
 };
 
 const fetchGasNowData = async () => {
