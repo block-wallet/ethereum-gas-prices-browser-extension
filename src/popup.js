@@ -3,9 +3,9 @@ const refreshButtonEl = document.querySelector('#refresh-button');
 const getStoredPrices = () => new Promise((res) => {
   chrome.storage.local.get(['prices'], (result) => {
     res({
-      gasNow: (result && result.prices.gasNow) || [null, null, null],
-      etherscan: (result && result.prices.etherscan) || [null, null, null],
-      egs: (result && result.prices.egs) || [null, null, null],
+      gasNow: (result && result.prices && result.prices.gasNow) || [null, null, null],
+      etherscan: (result && result.prices && result.prices.etherscan) || [null, null, null],
+      egs: (result && result.prices && result.prices.egs) || [null, null, null],
     });
   });
 });
