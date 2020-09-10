@@ -10,7 +10,7 @@ const getStoredPrices = () => new Promise((res) => {
   });
 });
 
-const formatPrice = (price) => price === null ? '...' : Math.trunc(price);
+const formatPrice = (price) => (price === null ? '...' : Math.trunc(price));
 
 const updateDOMForProvider = (provider, prices) => {
   document.querySelector(`#${provider} .fast`).textContent = formatPrice(prices[provider][0]);
@@ -22,8 +22,10 @@ const updateDOMForProvider = (provider, prices) => {
     prices[provider][1] !== null &&
     prices[provider][2] !== null
   );
-  document.querySelector(`#${provider} .timestamp`).setAttribute('data-timestamp', hasData ? prices[provider][3] : '');
-}
+
+  document.querySelector(`#${provider} .timestamp`)
+    .setAttribute('data-timestamp', hasData ? prices[provider][3] : '');
+};
 
 const updateDOM = (prices) => {
   updateDOMForProvider('gasNow', prices);
@@ -43,9 +45,9 @@ const updateTimestampDisplayDOM = (el) => {
     const secDiff = timestampNow - timestampThen;
     const diffText = secDiff === 0 ? 'just now' : `${secDiff}s ago`;
 
-    el.textContent = diffText;
+    el.textContent = diffText; // eslint-disable-line no-param-reassign
   } else {
-    el.textContent = '';
+    el.textContent = ''; // eslint-disable-line no-param-reassign
   }
 };
 
