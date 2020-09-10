@@ -8,11 +8,16 @@ The badge displays the current gas price estimation for "normal" transaction spe
 
 Clicking on the badge displays price estimations for different speed expectations ("slow", "normal", and "fast" transaction times). Each data provider has a different estimation according to their own calculation method. GasNow uses memory pool information to make gas price estimations, while Etherscan and EthGasStation use on-chain block data, which is more of a lagging indicator.
 
-Data from all providers is automatically refreshed every minute, and can be refreshed manually too. The extensions respects your privacy: zero data tracking, zero permissions required.
+Data from all providers is automatically refreshed every minute, and can be refreshed manually too.
+
+## Privacy
+
+The extension respects your privacy: zero data tracking, zero permissions required.
 
 ## Links
 
-- Chrome Web Store: *pending review*
+- Chrome extension: <a href="https://chrome.google.com/webstore/detail/ethereum-gas-prices/njbclohenpagagafbmdipcdoogfpnfhp">Download for Chrome/Brave</a>
+- Firefox extension: *pending review*
 
 
 ## Acknowledgments
