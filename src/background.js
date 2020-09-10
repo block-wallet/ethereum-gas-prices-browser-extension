@@ -1,7 +1,7 @@
+/* eslint-disable no-use-before-define */
+
 const DECIMALS_WEI = 1e18;
 const DECIMALS_GWEI = 1e9;
-
-let inMemStoredPrices; // Used for faster (synchronous) access to stored prices
 
 chrome.alarms.onAlarm.addListener(async ({ name }) => {
   if (name === 'fetch-prices') fetchPrices();
@@ -25,26 +25,43 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   }
 });
 
-const getStoredPrices = () => new Promise((res) => {
-  if (inMemStoredPrices) {
-    res(inMemStoredPrices);
-  } else {
-    chrome.storage.local.get(['prices'], (result) => {
-      res({
-        gasNow: (result && result.gasNow) || [null, null, null],
-        etherscan: (result && result.etherscan) || [null, null, null],
-        egs: (result && result.egs) || [null, null, null],
-      });
-    });
+const sleep = (duration) => new Promise((resolve) => setTimeout(resolve, duration));
+const lock = new (class Lock {
+  state = {
+    isLocked: false,
+  };
+
+  // Wait and acquire lock
+  async acquire() {
+    while (this.state.isLocked) {
+      await sleep(100); // eslint-disable-line no-await-in-loop
+    }
+
+    this.state.isLocked = true;
   }
+
+  release() {
+    this.state.isLocked = false;
+  }
+})();
+
+const getStoredPrices = () => new Promise((res) => {
+  chrome.storage.local.get(['prices'], (result) => {
+    res({
+      gasNow: (result && result.prices && result.prices.gasNow) || [null, null, null],
+      etherscan: (result && result.prices && result.prices.etherscan) || [null, null, null],
+      egs: (result && result.prices && result.prices.egs) || [null, null, null],
+    });
+  });
 });
 
 const setStoredPrices = async (prices) => new Promise((res) => {
-  inMemStoredPrices = prices;
   chrome.storage.local.set({ prices }, () => res());
 });
 
 const saveFetchedPricesForProvider = async (source, prices) => {
+  await lock.acquire();
+
   const storedPrices = await getStoredPrices();
   const timestamp = Math.trunc(+Date.now() / 1000);
 
@@ -52,6 +69,8 @@ const saveFetchedPricesForProvider = async (source, prices) => {
     ...storedPrices,
     [source]: prices.concat(timestamp),
   });
+
+  lock.release();
 };
 
 const fetchPrices = async () => {
