@@ -74,15 +74,15 @@ const saveFetchedPricesForProvider = async (source, prices) => {
 };
 
 const fetchPrices = async () => {
-  await fetchGasNowData()
+  fetchGasNowData()
     .catch(() => [null, null, null]) // Default to null if network error
     .then((prices) => saveFetchedPricesForProvider('gasNow', prices));
 
-  await fetchEtherscanData()
+  fetchEtherscanData()
     .catch(() => [null, null, null]) // Default to null if network error
     .then((prices) => saveFetchedPricesForProvider('etherscan', prices));
 
-  await fetchEGSData()
+  fetchEGSData()
     .catch(() => [null, null, null]) // Default to null if network error
     .then((prices) => saveFetchedPricesForProvider('egs', prices));
 };
