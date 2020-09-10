@@ -31,6 +31,7 @@ h1 {
   right: 12px;
   width: 15px;
   height: 15px;
+  padding: 0;
   background: url('./assets/refresh-icon.svg');
   border: 0;
   cursor: pointer;
