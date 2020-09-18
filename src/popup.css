@@ -94,3 +94,17 @@ table td:nth-child(5) {
   font-size: 20px;
   width: 20%;
 }
+
+.fast:hover:not([data-selected=true]),
+.normal:hover:not([data-selected=true]),
+.slow:hover:not([data-selected=true]) {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.fast[data-selected=true],
+.normal[data-selected=true],
+.slow[data-selected=true] {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
