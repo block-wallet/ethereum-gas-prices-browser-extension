@@ -7,23 +7,38 @@ chrome.alarms.onAlarm.addListener(async ({ name }) => {
   if (name === 'fetch-prices') fetchPrices();
 });
 
-chrome.storage.onChanged.addListener((changes, areaName) => {
+chrome.storage.onChanged.addListener(async (changes, areaName) => {
   if (areaName === 'local' && changes.prices) {
-    const newPrices = changes.prices.newValue;
+    const prices = changes.prices.newValue;
+    const badgeSource = await getStoredBadgeSource();
 
-    const value = (
-      newPrices.gasNow[1] ||
-      newPrices.etherscan[1] ||
-      newPrices.egs[1]
-    );
+    updateBadgeValue({ prices, badgeSource });
+  }
 
-    if (value) {
-      chrome.browserAction.setBadgeText({
-        text: `${Math.trunc(value)}`,
-      });
-    }
+  if (areaName === 'local' && changes.badgeSource) {
+    const prices = await getStoredPrices();
+    const badgeSource = changes.badgeSource.newValue;
+
+    updateBadgeValue({ prices, badgeSource });
   }
 });
+
+const updateBadgeValue = ({ prices, badgeSource }) => {
+  const [preferredProvider, preferredSpeed] = badgeSource.split('|');
+
+  const value = (
+    prices[preferredProvider][preferredSpeed] ||
+    prices.gasNow[preferredSpeed] ||
+    prices.etherscan[preferredSpeed] ||
+    prices.egs[preferredSpeed]
+  );
+
+  if (value) {
+    chrome.browserAction.setBadgeText({
+      text: `${Math.trunc(value)}`,
+    });
+  }
+};
 
 const sleep = (duration) => new Promise((resolve) => setTimeout(resolve, duration));
 const lock = {
@@ -44,6 +59,17 @@ const lock = {
     this.state.isLocked = false;
   },
 };
+
+const getStoredBadgeSource = () => new Promise((res) => {
+  chrome.storage.local.get(['badgeSource'], (result) => {
+    const defaultBadgeSource = 'gasNow|1';
+    res((result && result.badgeSource) || defaultBadgeSource);
+  });
+});
+
+const setStoredBadgeSource = async (badgeSource) => new Promise((res) => {
+  chrome.storage.local.set({ badgeSource }, () => res());
+});
 
 const getStoredPrices = () => new Promise((res) => {
   chrome.storage.local.get(['prices'], (result) => {
@@ -120,9 +146,18 @@ const fetchEGSData = async () => {
 
 chrome.alarms.create('fetch-prices', { periodInMinutes: 1 });
 fetchPrices(); // Not using the `when` option for the alarm because Firefox doesn't run it
-chrome.browserAction.setBadgeText({ text: '…' });
+
+// Set initial properties when the extension launches; since this isn't
+// a persistent background script, it may be regularly shut down and initialized
+// again: testing for the value of text allows to only apply initia value on the
+// first initialization
+chrome.browserAction.getBadgeText({}, (text) => {
+  const isInitialRun = text === '';
+  if (isInitialRun) chrome.browserAction.setBadgeText({ text: '…' });
+});
 chrome.browserAction.setBadgeBackgroundColor({ color: '#20242a' });
 
-chrome.runtime.onMessage.addListener(({ action } = {}) => {
+chrome.runtime.onMessage.addListener(({ action, ...data } = {}) => {
   if (action === 'refresh-data') fetchPrices();
+  if (action === 'update-badge-source') setStoredBadgeSource(data.badgeSource);
 });

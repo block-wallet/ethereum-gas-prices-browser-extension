@@ -10,6 +10,13 @@ const getStoredPrices = () => new Promise((res) => {
   });
 });
 
+const getStoredBadgeSource = () => new Promise((res) => {
+  chrome.storage.local.get(['badgeSource'], (result) => {
+    const defaultBadgeSource = 'gasNow|1';
+    res((result && result.badgeSource) || defaultBadgeSource);
+  });
+});
+
 const formatPrice = (price) => (price === null ? '...' : Math.trunc(price));
 
 const updateDOMForProvider = (provider, prices) => {
@@ -37,6 +44,18 @@ const updateDOM = (prices) => {
   }
 };
 
+const updateDOMForBadgeSource = (badgeSource) => {
+  document.querySelectorAll(`table td[data-source]:not([data-source="${badgeSource}"])`)
+    .forEach((el) => {
+      el.removeAttribute('data-selected');
+      el.setAttribute('title', 'Display this value in the badge');
+    });
+
+  const preferredEl = document.querySelector(`table td[data-source="${badgeSource}"]`);
+  preferredEl.setAttribute('data-selected', 'true');
+  preferredEl.removeAttribute('title');
+};
+
 const updateTimestampDisplayDOM = (el) => {
   const timestampNow = Math.trunc(+Date.now() / 1000);
   const timestampThen = el.getAttribute('data-timestamp');
@@ -56,19 +75,38 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
     const newPrices = changes.prices.newValue;
     updateDOM(newPrices);
   }
+
+  if (areaName === 'local' && changes.badgeSource) {
+    const newBadgeSource = changes.badgeSource.newValue;
+    updateDOMForBadgeSource(newBadgeSource);
+  }
 });
 
 const timestampEls = document.querySelectorAll('.timestamp');
 const updateTimestampDisplay = () => timestampEls.forEach((el) => updateTimestampDisplayDOM(el));
 setInterval(updateTimestampDisplay, 500);
 
-getStoredPrices()
-  .then((prices) => updateDOM(prices))
+Promise.all([
+  getStoredPrices(),
+  getStoredBadgeSource(),
+])
+  .then(([prices, badgeSource]) => {
+    updateDOM(prices);
+    updateDOMForBadgeSource(badgeSource);
+  })
   .then(() => updateTimestampDisplay());
 
 refreshButtonEl.addEventListener('click', () => {
   if (refreshButtonEl.getAttribute('data-content-loaded') === 'true') {
     refreshButtonEl.setAttribute('data-content-loaded', 'false');
     chrome.runtime.sendMessage({ action: 'refresh-data' });
+  }
+});
+
+document.querySelector('table').addEventListener('click', ({ target }) => {
+  const badgeSource = target.getAttribute('data-source');
+
+  if (badgeSource) {
+    chrome.runtime.sendMessage({ action: 'update-badge-source', badgeSource });
   }
 });
