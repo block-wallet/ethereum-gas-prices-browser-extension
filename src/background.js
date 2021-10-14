@@ -28,7 +28,7 @@ const updateBadgeValue = ({ prices, badgeSource }) => {
 
   const value = (
     prices[preferredProvider][preferredSpeed] ||
-    prices.gasNow[preferredSpeed] ||
+    prices.blocknative[preferredSpeed] ||
     prices.etherscan[preferredSpeed] ||
     prices.egs[preferredSpeed]
   );
@@ -62,7 +62,7 @@ const lock = {
 
 const getStoredBadgeSource = () => new Promise((res) => {
   chrome.storage.local.get(['badgeSource'], (result) => {
-    const defaultBadgeSource = 'gasNow|1';
+    const defaultBadgeSource = 'blocknative|1';
     res((result && result.badgeSource) || defaultBadgeSource);
   });
 });
@@ -74,7 +74,7 @@ const setStoredBadgeSource = async (badgeSource) => new Promise((res) => {
 const getStoredPrices = () => new Promise((res) => {
   chrome.storage.local.get(['prices'], (result) => {
     res({
-      gasNow: (result && result.prices && result.prices.gasNow) || [null, null, null],
+      blocknative: (result && result.prices && result.prices.blocknative) || [null, null, null],
       etherscan: (result && result.prices && result.prices.etherscan) || [null, null, null],
       egs: (result && result.prices && result.prices.egs) || [null, null, null],
     });
@@ -100,9 +100,9 @@ const saveFetchedPricesForProvider = async (source, prices) => {
 };
 
 const fetchPrices = async () => {
-  fetchGasNowData()
+  fetchBlocknativeData()
     .catch(() => [null, null, null]) // Default to null if network error
-    .then((prices) => saveFetchedPricesForProvider('gasNow', prices));
+    .then((prices) => saveFetchedPricesForProvider('blocknative', prices));
 
   fetchEtherscanData()
     .catch(() => [null, null, null]) // Default to null if network error
@@ -113,16 +113,15 @@ const fetchPrices = async () => {
     .then((prices) => saveFetchedPricesForProvider('egs', prices));
 };
 
-const fetchGasNowData = async () => {
-  const { data: { list } } =
-    await (await fetch('https://ethereum-data.opfi.fr/api/gasnow')).json();
+const fetchBlocknativeData = async () => {
+  const { fast, standard, slow } =
+    await (await fetch('https://ethereum-data.opfi.fr/api/blocknative')).json();
 
-  return [200, 500, 1000].map((index) => {
-    const priceForIndex = list.find((estimation) => estimation.index === index);
-    return priceForIndex ?
-      priceForIndex.gasPrice / DECIMALS_WEI * DECIMALS_GWEI :
-      null;
-  });
+  return [
+    fast.price,
+    standard.price,
+    slow.price,
+  ];
 };
 
 const fetchEtherscanData = async () => {

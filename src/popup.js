@@ -3,7 +3,7 @@ const refreshButtonEl = document.querySelector('#refresh-button');
 const getStoredPrices = () => new Promise((res) => {
   chrome.storage.local.get(['prices'], (result) => {
     res({
-      gasNow: (result && result.prices && result.prices.gasNow) || [null, null, null],
+      blocknative: (result && result.prices && result.prices.blocknative) || [null, null, null],
       etherscan: (result && result.prices && result.prices.etherscan) || [null, null, null],
       egs: (result && result.prices && result.prices.egs) || [null, null, null],
     });
@@ -12,7 +12,7 @@ const getStoredPrices = () => new Promise((res) => {
 
 const getStoredBadgeSource = () => new Promise((res) => {
   chrome.storage.local.get(['badgeSource'], (result) => {
-    const defaultBadgeSource = 'gasNow|1';
+    const defaultBadgeSource = 'blocknative|1';
     res((result && result.badgeSource) || defaultBadgeSource);
   });
 });
@@ -35,7 +35,7 @@ const updateDOMForProvider = (provider, prices) => {
 };
 
 const updateDOM = (prices) => {
-  updateDOMForProvider('gasNow', prices);
+  updateDOMForProvider('blocknative', prices);
   updateDOMForProvider('etherscan', prices);
   updateDOMForProvider('egs', prices);
 
