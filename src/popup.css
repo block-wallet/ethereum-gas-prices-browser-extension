@@ -25,6 +25,12 @@ h1 {
   border-radius: 6px;
 }
 
+hr {
+  height: 1px;
+  background: #d7dae0;
+  border: none;
+}
+
 #refresh-button {
   position: absolute;
   top: 12px;
@@ -80,9 +86,15 @@ table td:nth-child(4) {
   text-align: center;
 }
 
-table td:nth-child(5) {
+table td:nth-child(5),
+table tr.row-with-colspan td:nth-child(3) {
   width: 25%;
   text-align: right;
+}
+
+table tr.row-with-colspan td:nth-child(2) {
+  width: 51%;
+  text-align: center;
 }
 
 .fast, .normal, .slow, .timestamp {
@@ -95,16 +107,20 @@ table td:nth-child(5) {
   width: 20%;
 }
 
-.fast:hover:not([data-selected=true]),
-.normal:hover:not([data-selected=true]),
-.slow:hover:not([data-selected=true]) {
+#blocknative1559 .fast, #blocknative1559 .normal, #blocknative1559 .slow {
+  font-size: 14px;
+}
+
+.fast[data-source]:hover:not([data-selected=true]),
+.normal[data-source]:hover:not([data-selected=true]),
+.slow[data-source]:hover:not([data-selected=true]) {
   text-decoration: underline;
   cursor: pointer;
 }
 
-.fast[data-selected=true],
-.normal[data-selected=true],
-.slow[data-selected=true] {
+.fast[data-source][data-selected=true],
+.normal[data-source][data-selected=true],
+.slow[data-source][data-selected=true] {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 3px;
 }
