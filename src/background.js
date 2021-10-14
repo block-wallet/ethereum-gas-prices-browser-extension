@@ -77,6 +77,7 @@ const getStoredPrices = () => new Promise((res) => {
       blocknative: (result && result.prices && result.prices.blocknative) || [null, null, null],
       etherscan: (result && result.prices && result.prices.etherscan) || [null, null, null],
       egs: (result && result.prices && result.prices.egs) || [null, null, null],
+      blocknative1559: (result && result.prices && result.prices.blocknative1559) || [null, null, null],
     });
   });
 });
@@ -101,8 +102,14 @@ const saveFetchedPricesForProvider = async (source, prices) => {
 
 const fetchPrices = async () => {
   fetchBlocknativeData()
-    .catch(() => [null, null, null]) // Default to null if network error
-    .then((prices) => saveFetchedPricesForProvider('blocknative', prices));
+    .catch(() => [
+      [null, null, null],
+      [null, null, null],
+    ]) // Default to null if network error
+    .then(([prices, prices1559]) => {
+      saveFetchedPricesForProvider('blocknative1559', prices1559);
+      saveFetchedPricesForProvider('blocknative', prices);
+    });
 
   fetchEtherscanData()
     .catch(() => [null, null, null]) // Default to null if network error
@@ -117,11 +124,15 @@ const fetchBlocknativeData = async () => {
   const { fast, standard, slow } =
     await (await fetch('https://ethereum-data.opfi.fr/api/blocknative')).json();
 
-  return [
+  return [[
     fast.price,
     standard.price,
     slow.price,
-  ];
+  ], [
+    [fast.maxPriorityFeePerGas, fast.maxFeePerGas],
+    [standard.maxPriorityFeePerGas, standard.maxFeePerGas],
+    [slow.maxPriorityFeePerGas, slow.maxFeePerGas],
+  ]];
 };
 
 const fetchEtherscanData = async () => {

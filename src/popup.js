@@ -6,6 +6,7 @@ const getStoredPrices = () => new Promise((res) => {
       blocknative: (result && result.prices && result.prices.blocknative) || [null, null, null],
       etherscan: (result && result.prices && result.prices.etherscan) || [null, null, null],
       egs: (result && result.prices && result.prices.egs) || [null, null, null],
+      blocknative1559: (result && result.prices && result.prices.blocknative1559) || [null, null, null],
     });
   });
 });
@@ -18,11 +19,18 @@ const getStoredBadgeSource = () => new Promise((res) => {
 });
 
 const formatPrice = (price) => (price === null ? '...' : Math.trunc(price));
+const formatHtml = (prices) => (prices === null ? '...' : `${prices[0]}<br />${prices[1]}`);
 
 const updateDOMForProvider = (provider, prices) => {
-  document.querySelector(`#${provider} .fast`).textContent = formatPrice(prices[provider][0]);
-  document.querySelector(`#${provider} .normal`).textContent = formatPrice(prices[provider][1]);
-  document.querySelector(`#${provider} .slow`).textContent = formatPrice(prices[provider][2]);
+  if (provider === 'blocknative1559') {
+    document.querySelector(`#${provider} .fast`).innerHTML = formatHtml(prices[provider][0]);
+    document.querySelector(`#${provider} .normal`).innerHTML = formatHtml(prices[provider][1]);
+    document.querySelector(`#${provider} .slow`).innerHTML = formatHtml(prices[provider][2]);
+  } else {
+    document.querySelector(`#${provider} .fast`).textContent = formatPrice(prices[provider][0]);
+    document.querySelector(`#${provider} .normal`).textContent = formatPrice(prices[provider][1]);
+    document.querySelector(`#${provider} .slow`).textContent = formatPrice(prices[provider][2]);
+  }
 
   const hasData = (
     prices[provider][0] !== null &&
@@ -38,6 +46,7 @@ const updateDOM = (prices) => {
   updateDOMForProvider('blocknative', prices);
   updateDOMForProvider('etherscan', prices);
   updateDOMForProvider('egs', prices);
+  updateDOMForProvider('blocknative1559', prices);
 
   if (refreshButtonEl.getAttribute('data-content-loaded') !== 'true') {
     refreshButtonEl.setAttribute('data-content-loaded', 'true');
