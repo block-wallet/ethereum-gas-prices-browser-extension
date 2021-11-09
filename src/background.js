@@ -4,157 +4,164 @@ const DECIMALS_WEI = 1e18;
 const DECIMALS_GWEI = 1e9;
 
 chrome.alarms.onAlarm.addListener(async ({ name }) => {
-  if (name === 'fetch-prices') fetchPrices();
+    if (name === "fetch-prices") fetchPrices();
 });
 
 chrome.storage.onChanged.addListener(async (changes, areaName) => {
-  if (areaName === 'local' && changes.prices) {
-    const prices = changes.prices.newValue;
-    const badgeSource = await getStoredBadgeSource();
+    if (areaName === "local" && changes.prices) {
+        const prices = changes.prices.newValue;
+        const badgeSource = await getStoredBadgeSource();
 
-    updateBadgeValue({ prices, badgeSource });
-  }
+        updateBadgeValue({ prices, badgeSource });
+    }
 
-  if (areaName === 'local' && changes.badgeSource) {
-    const prices = await getStoredPrices();
-    const badgeSource = changes.badgeSource.newValue;
+    if (areaName === "local" && changes.badgeSource) {
+        const prices = await getStoredPrices();
+        const badgeSource = changes.badgeSource.newValue;
 
-    updateBadgeValue({ prices, badgeSource });
-  }
+        updateBadgeValue({ prices, badgeSource });
+    }
 });
 
 const updateBadgeValue = ({ prices, badgeSource }) => {
-  const [preferredProvider, preferredSpeed] = badgeSource.split('|');
+    const [preferredProvider, preferredSpeed] = badgeSource.split("|");
 
-  const value = (
-    prices[preferredProvider][preferredSpeed] ||
-    prices.blocknative[preferredSpeed] ||
-    prices.etherscan[preferredSpeed] ||
-    prices.egs[preferredSpeed]
-  );
+    const value = prices[preferredProvider][preferredSpeed] || prices.blocknative[preferredSpeed] || prices.etherscan[preferredSpeed] || prices.egs[preferredSpeed] || prices.etherchain[preferredSpeed];
 
-  if (value) {
-    chrome.browserAction.setBadgeText({
-      text: `${Math.trunc(value)}`,
-    });
-  }
+    if (value) {
+        chrome.browserAction.setBadgeText({
+            text: `${Math.trunc(value)}`,
+        });
+    }
 };
 
 const sleep = (duration) => new Promise((resolve) => setTimeout(resolve, duration));
 const lock = {
-  state: {
-    isLocked: false,
-  },
+    state: {
+        isLocked: false,
+    },
 
-  // Wait and acquire lock
-  async acquire() {
-    while (this.state.isLocked) {
-      await sleep(100); // eslint-disable-line no-await-in-loop
-    }
+    // Wait and acquire lock
+    async acquire() {
+        while (this.state.isLocked) {
+            await sleep(100); // eslint-disable-line no-await-in-loop
+        }
 
-    this.state.isLocked = true;
-  },
+        this.state.isLocked = true;
+    },
 
-  release() {
-    this.state.isLocked = false;
-  },
+    release() {
+        this.state.isLocked = false;
+    },
 };
 
-const getStoredBadgeSource = () => new Promise((res) => {
-  chrome.storage.local.get(['badgeSource'], (result) => {
-    const defaultBadgeSource = 'blocknative|1';
-    res((result && result.badgeSource) || defaultBadgeSource);
-  });
-});
-
-const setStoredBadgeSource = async (badgeSource) => new Promise((res) => {
-  chrome.storage.local.set({ badgeSource }, () => res());
-});
-
-const getStoredPrices = () => new Promise((res) => {
-  chrome.storage.local.get(['prices'], (result) => {
-    res({
-      blocknative: (result && result.prices && result.prices.blocknative) || [null, null, null],
-      etherscan: (result && result.prices && result.prices.etherscan) || [null, null, null],
-      egs: (result && result.prices && result.prices.egs) || [null, null, null],
-      blocknative1559: (result && result.prices && result.prices.blocknative1559) || [null, null, null],
+const getStoredBadgeSource = () =>
+    new Promise((res) => {
+        chrome.storage.local.get(["badgeSource"], (result) => {
+            const defaultBadgeSource = "blocknative|1";
+            res((result && result.badgeSource) || defaultBadgeSource);
+        });
     });
-  });
-});
 
-const setStoredPrices = async (prices) => new Promise((res) => {
-  chrome.storage.local.set({ prices }, () => res());
-});
+const setStoredBadgeSource = async (badgeSource) =>
+    new Promise((res) => {
+        chrome.storage.local.set({ badgeSource }, () => res());
+    });
+
+const getStoredPrices = () =>
+    new Promise((res) => {
+        chrome.storage.local.get(["prices"], (result) => {
+            res({
+                blocknative: (result && result.prices && result.prices.blocknative) || [null, null, null],
+                etherscan: (result && result.prices && result.prices.etherscan) || [null, null, null],
+                egs: (result && result.prices && result.prices.egs) || [null, null, null],
+                etherchain: (result && result.prices && result.prices.etherchain) || [null, null, null],
+                blocknative1559: (result && result.prices && result.prices.blocknative1559) || [null, null, null],
+            });
+        });
+    });
+
+const setStoredPrices = async (prices) =>
+    new Promise((res) => {
+        chrome.storage.local.set({ prices }, () => res());
+    });
 
 const saveFetchedPricesForProvider = async (source, prices) => {
-  await lock.acquire();
+    await lock.acquire();
 
-  const storedPrices = await getStoredPrices();
-  const timestamp = Math.trunc(+Date.now() / 1000);
+    const storedPrices = await getStoredPrices();
+    const timestamp = Math.trunc(+Date.now() / 1000);
 
-  await setStoredPrices({
-    ...storedPrices,
-    [source]: prices.concat(timestamp),
-  });
+    await setStoredPrices({
+        ...storedPrices,
+        [source]: prices.concat(timestamp),
+    });
 
-  lock.release();
+    lock.release();
 };
 
 const fetchPrices = async () => {
-  fetchBlocknativeData()
-    .catch(() => [
-      [null, null, null],
-      [null, null, null],
-    ]) // Default to null if network error
-    .then(([prices, prices1559]) => {
-      saveFetchedPricesForProvider('blocknative1559', prices1559);
-      saveFetchedPricesForProvider('blocknative', prices);
-    });
+    fetchBlocknativeData()
+        .catch(() => [
+            [null, null, null],
+            [null, null, null],
+        ]) // Default to null if network error
+        .then(([prices, prices1559]) => {
+            saveFetchedPricesForProvider("blocknative1559", prices1559);
+            saveFetchedPricesForProvider("blocknative", prices);
+        });
 
-  fetchEtherscanData()
-    .catch(() => [null, null, null]) // Default to null if network error
-    .then((prices) => saveFetchedPricesForProvider('etherscan', prices));
+    fetchEtherscanData()
+        .catch(() => [null, null, null]) // Default to null if network error
+        .then((prices) => saveFetchedPricesForProvider("etherscan", prices));
 
-  fetchEGSData()
-    .catch(() => [null, null, null]) // Default to null if network error
-    .then((prices) => saveFetchedPricesForProvider('egs', prices));
+    fetchEGSData()
+        .catch(() => [null, null, null]) // Default to null if network error
+        .then((prices) => saveFetchedPricesForProvider("egs", prices));
+
+    fetchEtherchainData()
+        .catch(() => [null, null, null]) // Default to null if network error
+        .then((prices) => saveFetchedPricesForProvider("etherchain", prices));
 };
 
 const fetchBlocknativeData = async () => {
-  const { fast, standard, slow } =
-    await (await fetch('https://ethereum-data.unspent.io/api/blocknative')).json();
+    const { fast, standard, slow } = await (await fetch("https://ethereum-data.unspent.io/api/blocknative")).json();
 
-  return [[
-    fast.price,
-    standard.price,
-    slow.price,
-  ], [
-    [fast.maxPriorityFeePerGas, fast.maxFeePerGas],
-    [standard.maxPriorityFeePerGas, standard.maxFeePerGas],
-    [slow.maxPriorityFeePerGas, slow.maxFeePerGas],
-  ]];
+    return [
+        [fast.price, standard.price, slow.price],
+        [
+            [fast.maxPriorityFeePerGas, fast.maxFeePerGas],
+            [standard.maxPriorityFeePerGas, standard.maxFeePerGas],
+            [slow.maxPriorityFeePerGas, slow.maxFeePerGas],
+        ],
+    ];
 };
 
 const fetchEtherscanData = async () => {
-  const { result: { SafeGasPrice, ProposeGasPrice, FastGasPrice } } =
-    await (await fetch('https://ethereum-data.unspent.io/api/etherscan-gas')).json();
+    const {
+        result: { SafeGasPrice, ProposeGasPrice, FastGasPrice },
+    } = await (await fetch("https://ethereum-data.unspent.io/api/etherscan-gas")).json();
 
-  return [
-    parseInt(FastGasPrice, 10),
-    parseInt(ProposeGasPrice, 10),
-    parseInt(SafeGasPrice, 10),
-  ];
+    return [parseInt(FastGasPrice, 10), parseInt(ProposeGasPrice, 10), parseInt(SafeGasPrice, 10)];
 };
 
 const fetchEGSData = async () => {
-  const { fast, safeLow, average } =
-    await (await fetch('https://ethereum-data.unspent.io/api/ethgasstation')).json();
+    const { fast, safeLow, average } = await (await fetch("https://ethereum-data.unspent.io/api/ethgasstation")).json();
 
-  return [fast / 10, average / 10, safeLow / 10];
+    return [fast / 10, average / 10, safeLow / 10];
 };
 
+const fetchEtherchainData = async () => {
+    var { fastest, fast, standard, currentBaseFee } = await (await fetch("https://www.etherchain.org/api/gasPriceOracle")).json();
 
-chrome.alarms.create('fetch-prices', { periodInMinutes: 1 });
+    fastest = fastest + currentBaseFee;
+    fast = fast + currentBaseFee;
+    standard = standard + currentBaseFee;
+
+    return [fastest, fast, standard];
+};
+
+chrome.alarms.create("fetch-prices", { periodInMinutes: 1 });
 fetchPrices(); // Not using the `when` option for the alarm because Firefox doesn't run it
 
 // Set initial properties when the extension launches; since this isn't
@@ -162,12 +169,12 @@ fetchPrices(); // Not using the `when` option for the alarm because Firefox does
 // again: testing for the value of text allows to only apply initia value on the
 // first initialization
 chrome.browserAction.getBadgeText({}, (text) => {
-  const isInitialRun = text === '';
-  if (isInitialRun) chrome.browserAction.setBadgeText({ text: '…' });
+    const isInitialRun = text === "";
+    if (isInitialRun) chrome.browserAction.setBadgeText({ text: "…" });
 });
-chrome.browserAction.setBadgeBackgroundColor({ color: '#20242a' });
+chrome.browserAction.setBadgeBackgroundColor({ color: "#20242a" });
 
 chrome.runtime.onMessage.addListener(({ action, ...data } = {}) => {
-  if (action === 'refresh-data') fetchPrices();
-  if (action === 'update-badge-source') setStoredBadgeSource(data.badgeSource);
+    if (action === "refresh-data") fetchPrices();
+    if (action === "update-badge-source") setStoredBadgeSource(data.badgeSource);
 });
