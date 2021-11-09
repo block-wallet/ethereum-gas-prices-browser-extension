@@ -6,6 +6,7 @@ const getStoredPrices = () => new Promise((res) => {
       blocknative: (result && result.prices && result.prices.blocknative) || [null, null, null],
       etherscan: (result && result.prices && result.prices.etherscan) || [null, null, null],
       egs: (result && result.prices && result.prices.egs) || [null, null, null],
+      etherchain: (result && result.prices && result.prices.etherchain) || [null, null, null],
       blocknative1559: (result && result.prices && result.prices.blocknative1559) || [null, null, null],
     });
   });
@@ -46,6 +47,7 @@ const updateDOM = (prices) => {
   updateDOMForProvider('blocknative', prices);
   updateDOMForProvider('etherscan', prices);
   updateDOMForProvider('egs', prices);
+  updateDOMForProvider('etherchain', prices);
   updateDOMForProvider('blocknative1559', prices);
 
   if (refreshButtonEl.getAttribute('data-content-loaded') !== 'true') {
