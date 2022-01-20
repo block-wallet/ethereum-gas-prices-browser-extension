@@ -36,7 +36,7 @@ const updateBadgeValue = ({ prices, badgeSource }) => {
   );
 
   if (value) {
-    chrome.browserAction.setBadgeText({
+    chrome.action.setBadgeText({
       text: `${Math.trunc(value)}`,
     });
   }
@@ -172,11 +172,11 @@ fetchPrices(); // Not using the `when` option for the alarm because Firefox does
 // a persistent background script, it may be regularly shut down and initialized
 // again: testing for the value of text allows to only apply initia value on the
 // first initialization
-chrome.browserAction.getBadgeText({}, (text) => {
+chrome.action.getBadgeText({}, (text) => {
   const isInitialRun = text === '';
-  if (isInitialRun) chrome.browserAction.setBadgeText({ text: '…' });
+  if (isInitialRun) chrome.action.setBadgeText({ text: '…' });
 });
-chrome.browserAction.setBadgeBackgroundColor({ color: '#20242a' });
+chrome.action.setBadgeBackgroundColor({ color: '#20242a' });
 
 chrome.runtime.onMessage.addListener(({ action, ...data } = {}) => {
   if (action === 'refresh-data') fetchPrices();
