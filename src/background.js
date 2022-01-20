@@ -1,5 +1,7 @@
 /* eslint-disable no-use-before-define */
 
+import { getBlocknativeData, getEtherscanData, getEGSData, debounce } from './utils.js';
+
 const DECIMALS_WEI = 1e18;
 const DECIMALS_GWEI = 1e9;
 
@@ -100,29 +102,40 @@ const saveFetchedPricesForProvider = async (source, prices) => {
   lock.release();
 };
 
-const fetchPrices = async () => {
+const fetchPrices = () => {
   fetchBlocknativeData()
-    .catch(() => [
-      [null, null, null],
-      [null, null, null],
-    ]) // Default to null if network error
+    .catch((err) => {
+      console.error(err);
+
+      return [
+        [null, null, null],
+        [null, null, null],
+      ];
+    }) // Default to null if network error
     .then(([prices, prices1559]) => {
       saveFetchedPricesForProvider('blocknative1559', prices1559);
       saveFetchedPricesForProvider('blocknative', prices);
     });
 
   fetchEtherscanData()
-    .catch(() => [null, null, null]) // Default to null if network error
+    .catch((err) => {
+      console.error(err);
+
+      return [null, null, null];
+    }) // Default to null if network error
     .then((prices) => saveFetchedPricesForProvider('etherscan', prices));
 
   fetchEGSData()
-    .catch(() => [null, null, null]) // Default to null if network error
+    .catch((err) => {
+      console.error(err);
+
+      return [null, null, null];
+    }) // Default to null if network error
     .then((prices) => saveFetchedPricesForProvider('egs', prices));
 };
 
-const fetchBlocknativeData = async () => {
-  const { fast, standard, slow } =
-    await (await fetch('https://ethereum-data.opfi.fr/api/blocknative')).json();
+const fetchBlocknativeData = debounce(async () => {
+  const { fast, standard, slow } = await getBlocknativeData();
 
   return [[
     fast.price,
@@ -133,25 +146,23 @@ const fetchBlocknativeData = async () => {
     [standard.maxPriorityFeePerGas, standard.maxFeePerGas],
     [slow.maxPriorityFeePerGas, slow.maxFeePerGas],
   ]];
-};
+});
 
-const fetchEtherscanData = async () => {
-  const { result: { SafeGasPrice, ProposeGasPrice, FastGasPrice } } =
-    await (await fetch('https://ethereum-data.opfi.fr/api/etherscan-gas')).json();
+const fetchEtherscanData = debounce(async () => {
+  const { result: { SafeGasPrice, ProposeGasPrice, FastGasPrice } } = await getEtherscanData();
 
   return [
     parseInt(FastGasPrice, 10),
     parseInt(ProposeGasPrice, 10),
     parseInt(SafeGasPrice, 10),
   ];
-};
+});
 
-const fetchEGSData = async () => {
-  const { fast, safeLow, average } =
-    await (await fetch('https://ethereum-data.opfi.fr/api/ethgasstation')).json();
+const fetchEGSData = debounce(async () => {
+  const { fast, safeLow, average } = await getEGSData();
 
   return [fast / 10, average / 10, safeLow / 10];
-};
+});
 
 
 chrome.alarms.create('fetch-prices', { periodInMinutes: 1 });
