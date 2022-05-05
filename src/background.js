@@ -138,7 +138,7 @@ const fetchPrices = () => {
   fetchEtherchainData()
     .catch((err) => {
       console.error(err);
-      
+
       return [null, null, null];
     }) // Default to null if network error
     .then((prices) => saveFetchedPricesForProvider("etherchain", prices));
