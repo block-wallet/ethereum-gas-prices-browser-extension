@@ -175,12 +175,9 @@ const fetchEGSData = debounce(async () => {
 });
 
 const fetchEtherchainData = async () => {
-  var { fastest, fast, standard, currentBaseFee } = await getEtherchainData();
-  fastest = fastest + currentBaseFee;
-  fast = fast + currentBaseFee;
-  standard = standard + currentBaseFee;
+  var {data: { fast, standard, slow, currentBaseFee } } = await getEtherchainData();
 
-  return [fastest, fast, standard];
+  return [fast/1000000000, standard/1000000000, slow/1000000000];
 };
 
 
