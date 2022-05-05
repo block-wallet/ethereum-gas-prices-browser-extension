@@ -39,9 +39,14 @@ const getEGSData = memoizeAsync(async () => (
   (await fetch(`https://ethgasstation.info/api/ethgasAPI.json?api-key=3923e07fd996632e1fbc897c859aa90a1f604bab3a2c22efa2780109db6f`)).json()
 ));
 
+const getEtherchainData = memoizeAsync(async () => (
+  (await fetch(`https://www.etherchain.org/api/gasPriceOracle`)).json()
+));
+
 export {
   debounce,
   getBlocknativeData,
   getEtherscanData,
   getEGSData,
+  getEtherchainData,
 }

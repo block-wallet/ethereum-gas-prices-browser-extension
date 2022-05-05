@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 
-import { getBlocknativeData, getEtherscanData, getEGSData, debounce } from './utils.js';
+import { getBlocknativeData, getEtherscanData, getEGSData, getEtherchainData, debounce } from './utils.js';
 
 const DECIMALS_WEI = 1e18;
 const DECIMALS_GWEI = 1e9;
@@ -32,7 +32,8 @@ const updateBadgeValue = ({ prices, badgeSource }) => {
     prices[preferredProvider][preferredSpeed] ||
     prices.blocknative[preferredSpeed] ||
     prices.etherscan[preferredSpeed] ||
-    prices.egs[preferredSpeed]
+    prices.egs[preferredSpeed] ||
+    prices.etherchain[preferredSpeed]
   );
 
   if (value) {
@@ -79,6 +80,7 @@ const getStoredPrices = () => new Promise((res) => {
       blocknative: (result && result.prices && result.prices.blocknative) || [null, null, null],
       etherscan: (result && result.prices && result.prices.etherscan) || [null, null, null],
       egs: (result && result.prices && result.prices.egs) || [null, null, null],
+      etherchain: (result && result.prices && result.prices.etherchain) || [null, null, null],
       blocknative1559: (result && result.prices && result.prices.blocknative1559) || [null, null, null],
     });
   });
@@ -132,6 +134,13 @@ const fetchPrices = () => {
       return [null, null, null];
     }) // Default to null if network error
     .then((prices) => saveFetchedPricesForProvider('egs', prices));
+
+  fetchEtherchainData()
+    .catch((err) => {
+    console.error(err);
+    return [null, null, null];
+    }) // Default to null if network error
+    .then((prices) => saveFetchedPricesForProvider("etherchain", prices));
 };
 
 const fetchBlocknativeData = debounce(async () => {
@@ -163,6 +172,15 @@ const fetchEGSData = debounce(async () => {
 
   return [fast / 10, average / 10, safeLow / 10];
 });
+
+const fetchEtherchainData = async () => {
+  var { fastest, fast, standard, currentBaseFee } = await getEtherchainData();
+  fastest = fastest + currentBaseFee;
+  fast = fast + currentBaseFee;
+  standard = standard + currentBaseFee;
+
+  return [fastest, fast, standard];
+};
 
 
 chrome.alarms.create('fetch-prices', { periodInMinutes: 1 });
