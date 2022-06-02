@@ -176,7 +176,7 @@ chrome.action.getBadgeText({}, (text) => {
   const isInitialRun = text === '';
   if (isInitialRun) chrome.action.setBadgeText({ text: '…' });
 });
-chrome.action.setBadgeBackgroundColor({ color: '#20242a' });
+chrome.action.setBadgeBackgroundColor({ color: '#e3dbd6' });
 
 chrome.runtime.onMessage.addListener(({ action, ...data } = {}) => {
   if (action === 'refresh-data') fetchPrices();
