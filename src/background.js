@@ -199,7 +199,7 @@ chrome.action.getBadgeText({}, (text) => {
   const isInitialRun = text === "";
   if (isInitialRun) chrome.action.setBadgeText({ text: "…" });
 });
-chrome.action.setBadgeBackgroundColor({ color: "#1673FF" }); // primary BlockWallet color
+chrome.action.setBadgeBackgroundColor({ color: "#4db8ff" });
 
 chrome.runtime.onMessage.addListener(({ action, ...data } = {}) => {
   if (action === "refresh-data") fetchPrices();
