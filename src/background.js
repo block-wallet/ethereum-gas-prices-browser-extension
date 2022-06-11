@@ -162,7 +162,7 @@ const fetchPrices = () => {
 
       return [null, null, null];
     }) // Default to null if network error
-    .then((prices) => saveFetchedPricesForProvider('egs', prices));
+    .then((prices) => saveFetchedPricesForProvider("egs", prices));
 
   fetchEtherchainData()
     .catch((err) => {
