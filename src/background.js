@@ -33,7 +33,7 @@ chrome.storage.onChanged.addListener(async (changes, areaName) => {
 const updateBadgeValue = ({ prices, badgeSource }) => {
   const [preferredProvider, preferredSpeed] = badgeSource.split("|");
 
-  const value =
+  const value = (
     prices[preferredProvider][preferredSpeed] ||
     prices.blocknative[preferredSpeed] ||
     prices.etherscan[preferredSpeed] ||
