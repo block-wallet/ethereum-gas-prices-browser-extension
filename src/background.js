@@ -4,6 +4,7 @@ import {
   getBlocknativeData,
   getEtherscanData,
   getEGSData,
+  getEtherchainData,
   debounce,
 } from "./utils.js";
 
@@ -203,11 +204,12 @@ const fetchEGSData = debounce(async () => {
   return [fast / 10, average / 10, safeLow / 10];
 });
 
-const fetchEtherchainData = async () => {
-  var {data: { fast, standard, slow, currentBaseFee } } = await getEtherchainData();
+const fetchEtherchainData = debounce(async () => {
+  const {data: { fast, standard, slow }, 
+} = await getEtherchainData();
 
-  return [fast/1000000000, standard/1000000000, slow/1000000000];
-};
+  return [Math.round(fast / 1000000000), Math.round(standard / 1000000000), Math.round(slow / 1000000000)];
+});
 
 
 chrome.alarms.create('fetch-prices', { periodInMinutes: 1 });
