@@ -1,4 +1,4 @@
-<p align="center"><img src="https://github.com/philippe-git/ethereum-gas-prices-browser-extension/blob/master/preview.png?raw=true" width="400" /></p>
+<p align="center"><img src="https://github.com/block-wallet/ethereum-gas-prices-browser-extension/blob/master/preview.png?raw=true" width="400" /></p>
 
 # Ethereum Gas Prices
 
@@ -18,4 +18,3 @@ The extension respects your privacy: zero data tracking, zero permissions requir
 
 - Chrome extension: [Download for Chrome/Brave](https://chrome.google.com/webstore/detail/ethereum-gas-prices/njbclohenpagagafbmdipcdoogfpnfhp)
 - Firefox extension: [Download for Firefox](https://addons.mozilla.org/en-CA/firefox/addon/ethereum-gas-prices/)
-

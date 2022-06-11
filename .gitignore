@@ -3,5 +3,6 @@ node_modules
 *.log
 dist
 dist.zip
+.DS_Store
 
 .vercel
