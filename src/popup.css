@@ -6,7 +6,7 @@ body {
   position: relative;
   background: #20242a;
   margin: 0;
-  padding: 0 20px 10px;
+  padding: 0 20px 24px;
   width: 400px;
   font-family: Helvetica, Ubuntu, Arial, sans-serif;
   font-size: 18px;
@@ -123,4 +123,29 @@ table tr.row-with-colspan td:nth-child(2) {
 .slow[data-source][data-selected=true] {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 3px;
+}
+
+.link-wrap {
+  margin: 16px 0 0;
+  padding: 8px;
+  text-align: center;
+  display: block;
+  border: 1px solid #F7C677;
+  border-radius: 4px;
+}
+
+.link-wrap .link {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.2;
+
+}
+
+.link-wrap .link a {
+  color: #F7C677;
+  text-decoration: none;
+}
+
+.link-wrap .link a:hover {
+  text-decoration: underline;
 }
