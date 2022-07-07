@@ -1,6 +1,6 @@
 {
   "name": "Ethereum Gas Prices",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "manifest_version": 3,
   "description": "Ethereum gas price info, always up to date, from multiple sources",
   "homepage_url": "https://github.com/block-wallet/ethereum-gas-prices-browser-extension",
