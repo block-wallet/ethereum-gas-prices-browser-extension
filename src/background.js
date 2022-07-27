@@ -14,6 +14,13 @@ chrome.alarms.onAlarm.addListener(async ({ name }) => {
   if (name === "fetch-prices") fetchPrices();
 });
 
+// Check whether extension has just been installed
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason == "install") {
+    chrome.tabs.create({ url: "introduction.html" });
+  }
+});
+
 chrome.storage.onChanged.addListener(async (changes, areaName) => {
   if (areaName === "local" && changes.prices) {
     const prices = changes.prices.newValue;
