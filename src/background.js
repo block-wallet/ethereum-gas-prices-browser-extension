@@ -4,6 +4,7 @@ import {
   getBlocknativeData,
   getEtherscanData,
   getEGSData,
+  getEtherchainData,
   debounce,
 } from "./utils.js";
 
@@ -40,11 +41,13 @@ chrome.storage.onChanged.addListener(async (changes, areaName) => {
 const updateBadgeValue = ({ prices, badgeSource }) => {
   const [preferredProvider, preferredSpeed] = badgeSource.split("|");
 
-  const value =
+  const value = (
     prices[preferredProvider][preferredSpeed] ||
     prices.blocknative[preferredSpeed] ||
     prices.etherscan[preferredSpeed] ||
-    prices.egs[preferredSpeed];
+    prices.egs[preferredSpeed] ||
+    prices.etherchain[preferredSpeed]
+  );
 
   if (value) {
     chrome.action.setBadgeText({
@@ -106,6 +109,11 @@ const getStoredPrices = () =>
           null,
           null,
         ],
+        etherchain: (result && result.prices && result.prices.etherchain) || [
+          null,
+          null,
+          null,
+        ],
         blocknative1559: (result &&
           result.prices &&
           result.prices.blocknative1559) || [null, null, null],
@@ -162,6 +170,14 @@ const fetchPrices = () => {
       return [null, null, null];
     }) // Default to null if network error
     .then((prices) => saveFetchedPricesForProvider("egs", prices));
+
+  fetchEtherchainData()
+    .catch((err) => {
+      console.error(err);
+
+      return [null, null, null];
+    }) // Default to null if network error
+    .then((prices) => saveFetchedPricesForProvider("etherchain", prices));
 };
 
 const fetchBlocknativeData = debounce(async () => {
@@ -195,7 +211,15 @@ const fetchEGSData = debounce(async () => {
   return [fast / 10, average / 10, safeLow / 10];
 });
 
-chrome.alarms.create("fetch-prices", { periodInMinutes: 1 });
+const fetchEtherchainData = debounce(async () => {
+  const {data: { fast, standard, slow }, 
+} = await getEtherchainData();
+
+  return [Math.round(fast / 1000000000), Math.round(standard / 1000000000), Math.round(slow / 1000000000)];
+});
+
+
+chrome.alarms.create('fetch-prices', { periodInMinutes: 1 });
 fetchPrices(); // Not using the `when` option for the alarm because Firefox doesn't run it
 
 // Set initial properties when the extension launches; since this isn't
