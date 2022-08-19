@@ -7,7 +7,7 @@ const memoizeAsync = (fn) => {
   let cache;
 
   return async () => {
-    const isCacheExpired = (now() - lastRunTs) > CACHE_DURATION;
+    const isCacheExpired = now() - lastRunTs > CACHE_DURATION;
 
     if (isCacheExpired) {
       lastRunTs = now();
@@ -15,33 +15,41 @@ const memoizeAsync = (fn) => {
     }
 
     return cache;
-  }
+  };
 };
 
 const debounce = (fn) => {
   let timeoutId;
 
-  return () => new Promise((resolve) => {
-    if (timeoutId) clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => resolve(fn()), 500);
-  });
+  return () =>
+    new Promise((resolve) => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => resolve(fn()), 500);
+    });
 };
 
-const getBlocknativeData = memoizeAsync(async () => (
-  (await fetch('https://opfi.fr/api/blocknative')).json()
-));
+const getBlocknativeData = memoizeAsync(async () =>
+  (
+    await fetch(
+      "https://api.blocknative.com/gasprices/blockprices?confidenceLevels=99&confidenceLevels=90&confidenceLevels=80&confidenceLevels=60",
+    )
+  ).json(),
+);
 
-const getEtherscanData = memoizeAsync(async () => (
-  (await fetch('https://api.etherscan.io/api?module=gastracker&action=gasoracle')).json()
-));
+const getEtherscanData = memoizeAsync(async () =>
+  (
+    await fetch(
+      "https://api.etherscan.io/api?module=gastracker&action=gasoracle",
+    )
+  ).json(),
+);
 
-const getEGSData = memoizeAsync(async () => (
-  (await fetch(`https://ethgasstation.info/api/ethgasAPI.json?api-key=3923e07fd996632e1fbc897c859aa90a1f604bab3a2c22efa2780109db6f`)).json()
-));
+const getEGSData = memoizeAsync(async () =>
+  (
+    await fetch(
+      `https://ethgasstation.info/api/ethgasAPI.json?api-key=3923e07fd996632e1fbc897c859aa90a1f604bab3a2c22efa2780109db6f`,
+    )
+  ).json(),
+);
 
-export {
-  debounce,
-  getBlocknativeData,
-  getEtherscanData,
-  getEGSData,
-}
+export { debounce, getBlocknativeData, getEtherscanData, getEGSData };

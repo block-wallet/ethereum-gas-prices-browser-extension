@@ -165,7 +165,14 @@ const fetchPrices = () => {
 };
 
 const fetchBlocknativeData = debounce(async () => {
-  const { fast, standard, slow } = await getBlocknativeData();
+  const response = await getBlocknativeData();
+
+  const estimatedPrices = response.blockPrices[0].estimatedPrices;
+
+  const fastest = estimatedPrices.find(({ confidence }) => confidence === 99);
+  const fast = estimatedPrices.find(({ confidence }) => confidence === 90);
+  const standard = estimatedPrices.find(({ confidence }) => confidence === 80);
+  const slow = estimatedPrices.find(({ confidence }) => confidence === 60);
 
   return [
     [fast.price, standard.price, slow.price],
