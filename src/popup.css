@@ -38,13 +38,13 @@ hr {
   width: 15px;
   height: 15px;
   padding: 0;
-  background: url('./assets/refresh-icon.svg');
+  background: url("./assets/refresh-icon.svg");
   border: 0;
   cursor: pointer;
   outline: none;
 }
 
-#refresh-button:not([data-content-loaded=true]) {
+#refresh-button:not([data-content-loaded="true"]) {
   animation: 0.6s linear infinite spin;
 }
 
@@ -97,30 +97,37 @@ table tr.row-with-colspan td:nth-child(2) {
   text-align: center;
 }
 
-.fast, .normal, .slow, .timestamp {
+.fast,
+.normal,
+.slow,
+.timestamp {
   font-family: monospace;
 }
 
-.fast, .normal, .slow {
+.fast,
+.normal,
+.slow {
   color: #d7dae0;
   font-size: 20px;
   width: 20%;
 }
 
-#blocknative1559 .fast, #blocknative1559 .normal, #blocknative1559 .slow {
+#blocknative1559 .fast,
+#blocknative1559 .normal,
+#blocknative1559 .slow {
   font-size: 14px;
 }
 
-.fast[data-source]:hover:not([data-selected=true]),
-.normal[data-source]:hover:not([data-selected=true]),
-.slow[data-source]:hover:not([data-selected=true]) {
+.fast[data-source]:hover:not([data-selected="true"]),
+.normal[data-source]:hover:not([data-selected="true"]),
+.slow[data-source]:hover:not([data-selected="true"]) {
   text-decoration: underline;
   cursor: pointer;
 }
 
-.fast[data-source][data-selected=true],
-.normal[data-source][data-selected=true],
-.slow[data-source][data-selected=true] {
+.fast[data-source][data-selected="true"],
+.normal[data-source][data-selected="true"],
+.slow[data-source][data-selected="true"] {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 3px;
 }
@@ -130,19 +137,33 @@ table tr.row-with-colspan td:nth-child(2) {
   padding: 8px;
   text-align: center;
   display: block;
-  border: 1px solid #F7C677;
+  border: 1px solid #f7c677;
   border-radius: 4px;
+}
+
+.link-wrap.hide {
+  display: none;
+}
+
+.link-wrap-filled {
+  background-color: #f7c677;
 }
 
 .link-wrap .link {
   font-weight: 400;
   font-size: 14px;
   line-height: 1.2;
-
 }
 
 .link-wrap .link a {
-  color: #F7C677;
+  color: #f7c677;
+  text-decoration: none;
+}
+.link-wrap-filled .link {
+  color: #1d2025;
+}
+.link-wrap-filled .link a {
+  color: #1d2025;
   text-decoration: none;
 }
 

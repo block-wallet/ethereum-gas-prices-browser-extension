@@ -119,3 +119,8 @@ document.querySelector('table').addEventListener('click', ({ target }) => {
     chrome.runtime.sendMessage({ action: 'update-badge-source', badgeSource });
   }
 });
+
+window.addEventListener('load', function () {
+  const selector = Math.random() < .5 ? ".link-wrap" : ".link-wrap-filled";
+  document.querySelector(selector).classList.add('hide');
+});
