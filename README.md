@@ -85,7 +85,7 @@ The extension respects your privacy: zero data tracking, zero permissions requir
     </picture>
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://discord.com/invite/EKVZ2xWXEH">
+  <a href="https://discord.gg/ju9htU7xMW">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://blockwallet.io/static/images/logo-discord.svg" />
       <source media="(prefers-color-scheme: light)" srcset="https://blockwallet.io/static/images/logo-discord-d.svg" />
